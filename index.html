@@ -1,0 +1,553 @@
+<!doctype html>
+<!-- Copyright (c) Meta Platforms, Inc. and affiliates. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="UnStep: training-free acceleration of causal video diffusion. Generate at 50 FPS on H100 with the same pretrained checkpoint, fewer denoising steps, and no retraining."
+    />
+    <meta name="theme-color" content="#f9f9f7" />
+    <meta
+      property="og:title"
+      content="UnStep | Training-Free Causal Video Acceleration"
+    />
+    <meta
+      property="og:description"
+      content="Fewer steps. Same checkpoint. 50 FPS on a single H100, without retraining."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://y-mansour.github.io/UnStep/" />
+    <meta
+      property="og:image"
+      content="https://y-mansour.github.io/UnStep/media/social.jpg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>UnStep | Training-Free Acceleration of Causal Video Diffusion</title>
+    <link rel="icon" href="media/favicon.png" type="image/png" />
+    <link
+      rel="preload"
+      href="media/manrope-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="style.css?v=20260923-hd" />
+    <script defer src="examples.js?v=20260923-surreal"></script>
+    <script defer src="site.js?v=20260923-hd"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="UnStep home">UnStep</a>
+      <nav aria-label="Main navigation">
+        <a href="#results">Results</a><a href="#method">Method</a
+        ><a href="#examples">Videos</a>
+        <a class="nav-code" href="https://github.com/facebookresearch/UnStep"
+          >Code
+          <img
+            src="media/icons/arrow-up-right.svg"
+            alt=""
+            width="16"
+            height="16"
+        /></a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="title">
+        <video
+          id="hero-video"
+          class="hero-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          src="media/surfing-otter.mp4"
+          poster="media/surfing-otter.jpg"
+          aria-label="Wan2.1-T2V-14B text-to-video example of an otter surfing in tropical waters"
+        ></video>
+        <div class="hero-shade"></div>
+        <div class="hero-inner">
+          <h1 id="title">UnStep</h1>
+          <p class="paper-title">
+            Training-Free Acceleration of Causal Video Diffusion<br
+              class="desktop-break"
+            />
+            with Fewer Steps Than Distillation
+          </p>
+          <ul class="authors" aria-label="Authors">
+            <li>Youssef Mansour</li>
+            <li>Enis Simsar</li>
+            <li>Fadime Sener</li>
+            <li>Markos Georgopoulos</li>
+            <li>Albert Pumarola</li>
+            <li>Ali Thabet</li>
+            <li>Edgar Schoenfeld</li>
+          </ul>
+          <p class="affiliation">Meta Superintelligence Labs</p>
+          <div class="paper-links">
+            <button
+              class="button paper-placeholder"
+              type="button"
+              disabled
+              title="Paper link will be added when available"
+            >
+              <img
+                src="media/icons/file-text.svg"
+                width="18"
+                height="18"
+                alt=""
+              />Paper <span class="coming-soon">Coming soon</span>
+            </button>
+            <a
+              class="button button-light"
+              href="https://github.com/facebookresearch/UnStep"
+              ><img
+                src="media/icons/code-xml.svg"
+                width="18"
+                height="18"
+                alt="" />Code
+              <img
+                src="media/icons/arrow-up-right.svg"
+                width="16"
+                height="16"
+                alt=""
+            /></a>
+          </div>
+        </div>
+      </section>
+
+      <div class="metrics wrap" aria-label="Key results">
+        <div>
+          <h3>Single H100</h3>
+          <div class="speed-options">
+            <div>
+              <strong>50<span> FPS</span></strong
+              ><span>Two steps</span>
+            </div>
+            <div>
+              <strong>60<span> FPS</span></strong
+              ><span>One step</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3>Single GB200</h3>
+          <div class="speed-options">
+            <div>
+              <strong>64<span> FPS</span></strong
+              ><span>Two steps</span>
+            </div>
+            <div>
+              <strong>77<span> FPS</span></strong
+              ><span>One step</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <strong class="training-free">Training-free</strong>
+          <span>Inference-only acceleration</span>
+        </div>
+      </div>
+
+      <section class="intro wrap section" aria-labelledby="intro-title">
+        <p class="eyebrow ink">The same model. A faster way to run it.</p>
+        <h2 id="intro-title">
+          Fewer steps.<br /><span class="muted">Not a new checkpoint.</span>
+        </h2>
+        <div class="intro-copy">
+          <p>
+            Few-step video models are fast, but not fast enough.
+            <strong>UnStep is an inference-only wrapper</strong> that
+            accelerates existing causal video models with fewer denoising steps,
+            a bounded attention cache, and a faster transformer and decoder
+            runtime.
+          </p>
+          <p>
+            Two training-free mechanisms recover lost quality: refining the
+            existing clean-cache pass and applying truncated SVD to attention
+            value and output projections. The result is faster generation from
+            the <strong>same pretrained checkpoint</strong>.
+          </p>
+        </div>
+      </section>
+
+      <section
+        id="results"
+        class="section results-section"
+        aria-labelledby="results-title"
+      >
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <h2 id="results-title">A new speed regime for causal video diffusion.</h2>
+            </div>
+            <p>
+              Five-second video generation.<br />832 &times; 480. Batch size
+              one.
+            </p>
+          </div>
+          <figure class="wide-figure">
+            <a
+              href="media/results.png"
+              target="_blank"
+              rel="noopener"
+              aria-label="Open the full-size speed and quality figure"
+              ><img
+                src="media/results.png"
+                width="2450"
+                height="1118"
+                loading="lazy"
+                alt="Figure 1: UnStep's speed-quality operating points compared with causal video generation methods on H100 and GB200."
+            /></a>
+            <figcaption>
+              Figure 1. End-to-end throughput and VBench quality on H100 and
+              GB200, as reported in the paper.
+              <a href="media/results.png" target="_blank" rel="noopener"
+                >Full-size figure <span aria-hidden="true">&nearr;</span></a
+              >
+            </figcaption>
+          </figure>
+          <div class="results-bottom">
+            <div>
+              <h3>Wrap the checkpoint.<br />Keep the quality.</h3>
+              <p>
+                One wrapper, applied to Self Forcing, Causal Forcing, and
+                LongLive 1.0 without retraining.
+              </p>
+              <p class="small-note">
+                H100 results from the paper. Throughput is generation FPS, not
+                video playback rate. Headline speeds are rounded.
+              </p>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">
+                  Default two-step UnStep results on the full 946-prompt VBench
+                  T2V suite
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Checkpoint</th>
+                    <th scope="col">FPS</th>
+                    <th scope="col">VBench total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Self Forcing</th>
+                    <td>17.0</td>
+                    <td>84.31</td>
+                  </tr>
+                  <tr class="ours">
+                    <th scope="row">+ UnStep</th>
+                    <td>49.8</td>
+                    <td>84.56</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Causal Forcing</th>
+                    <td>17.0</td>
+                    <td>84.82</td>
+                  </tr>
+                  <tr class="ours">
+                    <th scope="row">+ UnStep</th>
+                    <td>49.8</td>
+                    <td>84.93</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">LongLive 1.0</th>
+                    <td>17.0</td>
+                    <td>83.31</td>
+                  </tr>
+                  <tr class="ours">
+                    <th scope="row">+ UnStep</th>
+                    <td>49.8</td>
+                    <td>83.42</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="method" class="section wrap" aria-labelledby="method-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="method-title">Accelerate. Reduce. Recover.</h2>
+          </div>
+          <p>All at inference.<br />No finetuning. No redistillation.</p>
+        </div>
+        <figure class="wide-figure method-figure">
+          <a
+            href="media/method.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open the full-size UnStep method figure"
+            ><img
+              src="media/method.png"
+              loading="lazy"
+              width="2600"
+              height="856"
+              alt="UnStep method: optimize the DiT and VAE runtime, reduce denoising steps and the KV window, then recover quality with clean-cache refinement and V/O truncated SVD."
+          /></a>
+        </figure>
+        <div class="method-steps">
+          <article>
+            <span class="step-number">01</span>
+            <h3>Optimize the runtime</h3>
+            <p>
+              Efficient attention calls and KV indexing, fused Triton RoPE, and
+              VAE precision, memory-layout, and convolution optimizations.
+            </p>
+          </article>
+          <article>
+            <span class="step-number">02</span>
+            <h3>Do less computation</h3>
+            <p>
+              Keep four denoising steps for the first chunk. Use two for later
+              chunks, with a bounded temporal KV window.
+            </p>
+          </article>
+          <article>
+            <span class="step-number">03</span>
+            <h3>Recover the quality</h3>
+            <p>
+              Refine and reuse the existing clean-cache pass, then apply
+              truncated SVD to the attention value and output projections.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="examples"
+        class="section examples-section"
+        aria-labelledby="examples-title"
+      >
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <h2 id="examples-title">Same input. Different runtime.</h2>
+            </div>
+            <p>Selected text-to-video examples.</p>
+          </div>
+          <div class="gallery-controls">
+            <div class="segmented" role="group" aria-label="Base checkpoint">
+              <button type="button" data-model="sf" aria-pressed="true">
+                Self Forcing</button
+              ><button type="button" data-model="cf" aria-pressed="false">
+                Causal Forcing
+              </button>
+            </div>
+            <div class="select-field">
+              <label for="category">Scene</label
+              ><select id="category">
+                <option value="all">All scenes</option>
+                <option value="motion">Subject motion</option>
+                <option value="landscape">Landscape</option>
+                <option value="character">Character animation</option>
+              </select>
+            </div>
+            <div class="select-field sample-field">
+              <label for="example">Example</label
+              ><select id="example"></select>
+            </div>
+            <div class="gallery-arrows">
+              <button
+                type="button"
+                class="icon-button"
+                id="previous"
+                aria-label="Previous example"
+                title="Previous example"
+              >
+                <img
+                  src="media/icons/arrow-left.svg"
+                  width="19"
+                  height="19"
+                  alt=""
+                /></button
+              ><button
+                type="button"
+                class="icon-button"
+                id="next"
+                aria-label="Next example"
+                title="Next example"
+              >
+                <img
+                  src="media/icons/arrow-right.svg"
+                  width="19"
+                  height="19"
+                  alt=""
+                />
+              </button>
+            </div>
+          </div>
+          <div class="sample-caption">
+            <span id="sample-index" class="sample-index"></span>
+            <p id="sample-prompt" aria-live="polite"></p>
+          </div>
+          <div class="comparison">
+            <figure class="video-panel">
+              <figcaption>
+                <span id="original-label">Self Forcing</span
+                ><span class="model-tag">17 FPS</span>
+              </figcaption>
+              <video
+                id="original-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="none"
+                aria-label="Original model video"
+              ></video>
+              <p class="media-error" hidden>
+                Video could not be loaded. <a href="">Open the MP4</a>
+              </p>
+            </figure>
+            <figure class="video-panel">
+              <figcaption>
+                <span id="unstep-label">Self Forcing + UnStep</span
+                ><span class="model-tag accent">50 FPS</span>
+              </figcaption>
+              <video
+                id="unstep-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="none"
+                aria-label="UnStep video"
+              ></video>
+              <p class="media-error" hidden>
+                Video could not be loaded. <a href="">Open the MP4</a>
+              </p>
+            </figure>
+          </div>
+          <noscript
+            ><p>
+              Video comparison controls require JavaScript.
+              <a href="media/t2v-753-sf_original.mp4">Original SF example</a>
+              &middot;
+              <a href="media/t2v-753-sf_unstep.mp4">SF + UnStep example</a>.
+            </p></noscript
+          >
+        </div>
+      </section>
+
+      <section id="image-to-video" class="i2v-band" aria-labelledby="i2v-title">
+        <div class="wrap">
+          <div class="i2v-heading">
+            <div>
+              <h2 id="i2v-title">Image-to-video</h2>
+            </div>
+            <div class="select-field">
+              <label for="i2v-example">Example</label>
+              <select id="i2v-example">
+                <option value="0576">Above the valley</option>
+                <option value="0890">Underwater motion</option>
+                <option value="0909">A quiet moment</option>
+                <option value="0953">Petals and droplets</option>
+                <option value="0864">Water and mist</option>
+                <option value="0897">On a mossy branch</option>
+                <option value="0883">Wings and petals</option>
+              </select>
+            </div>
+          </div>
+          <p id="i2v-prompt" class="i2v-prompt" aria-live="polite">
+            a group of hot air balloons flying over a valley
+          </p>
+          <div class="i2v-grid">
+            <figure class="i2v-reference">
+              <figcaption>Reference image</figcaption>
+              <img
+                id="i2v-reference"
+                src="media/i2v-0576-reference.jpg"
+                alt="Hot air balloons over a valley"
+                width="832"
+                height="480"
+                loading="lazy"
+              />
+            </figure>
+            <figure>
+              <figcaption>
+                Self Forcing
+                <span class="model-tag">17 FPS</span>
+              </figcaption>
+              <video
+                id="i2v-original-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="none"
+                src="media/i2v-0576-sf_original.mp4"
+                poster="media/i2v-0576-sf_original.jpg"
+                aria-label="Self Forcing: hot air balloons over a valley"
+              ></video>
+              <p class="media-error" hidden>
+                Video unavailable.
+                <a href="media/i2v-0576-sf_original.mp4">Open MP4</a>.
+              </p>
+            </figure>
+            <figure>
+              <figcaption>
+                Self Forcing + UnStep
+                <span class="model-tag accent">50 FPS</span>
+              </figcaption>
+              <video
+                id="i2v-unstep-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="none"
+                src="media/i2v-0576-sf_unstep.mp4"
+                poster="media/i2v-0576-sf_unstep.jpg"
+                aria-label="Self Forcing plus UnStep: hot air balloons over a valley"
+              ></video>
+              <p class="media-error" hidden>
+                Video unavailable.
+                <a href="media/i2v-0576-sf_unstep.mp4">Open MP4</a>.
+              </p>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="citation"
+        class="section wrap citation-section"
+        aria-labelledby="citation-title"
+      >
+        <div>
+          <p class="eyebrow ink">Citation</p>
+          <h2 id="citation-title">Cite UnStep</h2>
+        </div>
+        <div class="citation-placeholder">
+          <p>Citation forthcoming.</p>
+          <pre id="bibtex" aria-label="BibTeX citation, to be added"></pre>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer wrap">
+      <a class="wordmark" href="#top">UnStep</a>
+      <p>Meta Superintelligence Labs</p>
+      <div>
+        <a href="https://github.com/facebookresearch/UnStep">GitHub</a
+        ><a href="https://github.com/facebookresearch/UnStep/blob/main/LICENSE"
+          >License</a
+        >
+      </div>
+    </footer>
+    <script async src="https://www.w3counter.com/tracker.js?id=157991"></script>
+  </body>
+</html>
